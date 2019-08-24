@@ -1,0 +1,11 @@
+Visual Studio Code extension for Cerberus Programming Language
+
+To use, download the VSIX file, then in VSCode select the Extensions Tab and click the 3-dot menu and "Install from VSIX". Select the VSIX file.
+You may need to click the reload prompt in the corner. Afterwards, find the extension configuration and set the transcc path for your system.
+
+To build, find the command menu (control-shift-p) and type Cerberus to select which build you would like. Hotkeys can be assigned. The extension offers configuration for build arguments.
+
+If you would like to expand on the language highlights, feel free to make a PR.
+
+v0.9.0 - initial commit
+

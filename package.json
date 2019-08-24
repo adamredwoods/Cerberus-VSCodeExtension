@@ -1,0 +1,120 @@
+{
+    "name": "cerberus",
+    "displayName": "%displayName%",
+    "description": "%description%",
+    "version": "0.9.0",
+    "publisher": "adamredwoods",
+    "categories": ["Programming Languages"],
+    "engines": {
+        "vscode": "^1.36.0"
+    },
+    "scripts": {
+        "update-grammar": "node ../../build/npm/update-grammar.js Syntaxes/Cerberus.plist ./syntaxes/cerberus.tmLanguage.json"
+    },
+    "activationEvents": [
+        "onCommand:extension.buildHtml5",
+        "onCommand:extension.buildGlfw",
+        "onCommand:extension.buildIos",
+        "onCommand:extension.buildAndroid",
+        "onCommand:extension.buildCpp"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "cerberus",
+                "extensions": [
+                    ".cxs",
+                    ".monkey"
+                ],
+                "aliases": [
+                    "Cerberus",
+                    "cerberus"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "cerberus",
+                "scopeName": "source.cerberus",
+                "path": "./syntaxes/cerberus.tmLanguage.json"
+            }
+        ],
+        "commands": [
+            {
+                "command": "extension.buildHtml5",
+                "title": "Build Html5",
+                "category": "Cerberus"
+            },
+            {
+                "command": "extension.buildGlfw",
+                "title": "Build Glfw/Desktop",
+                "category": "Cerberus"
+            },
+            {
+                "command": "extension.buildAndroid",
+                "title": "Build Android",
+                "category": "Cerberus"
+            },
+            {
+                "command": "extension.buildIos",
+                "title": "Build iOS",
+                "category": "Cerberus"
+            },
+            {
+                "command": "extension.buildCpp",
+                "title": "Build Cpp Tool",
+                "category": "Cerberus"
+            }
+        ],
+        "configuration": {
+            "title": "Cerberus",
+            "properties": {
+                "cerberus.transccDirPath": {
+                    "type": "string",
+                    "default": "/Applications/Cerberus/bin/transcc_macos",
+                    "description": "The location to the Transcc compiler.",
+                    "scope": "application"
+                },
+                "cerberus.args.html5": {
+                    "type": "string",
+                    "default": "-config=Debug -run",
+                    "description": "Arguments for HTML5 build target.",
+                    "scope": "application"
+                },
+                "cerberus.args.glfw": {
+                    "type": "string",
+                    "default": "-config=Debug -run",
+                    "description": "Arguments for GLFW/Desktop build target.",
+                    "scope": "application"
+                },
+                "cerberus.args.android": {
+                    "type": "string",
+                    "default": "-config=Debug -run",
+                    "description": "Arguments for Andorid build target.",
+                    "scope": "application"
+                },
+                "cerberus.args.ios": {
+                    "type": "string",
+                    "default": "-config=Debug -run",
+                    "description": "Arguments for iOS build target.",
+                    "scope": "application"
+                },
+                "cerberus.args.cpp": {
+                    "type": "string",
+                    "default": "-config=Debug -run",
+                    "description": "Arguments for C++ build target.",
+                    "scope": "application"
+                }
+            }
+        }
+    },
+    "dependencies": {
+        "@types/vscode": "^1.37.0",
+        "typescript": "^3.5.3"
+    },
+    "devDependencies": {
+        "@types/node": "^8.10.52"
+    }
+}

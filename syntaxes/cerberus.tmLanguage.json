@@ -1,0 +1,224 @@
+{
+	"information_for_contributors": [
+		"This file has been converted from https://github.com/textmate/cerberus.tmbundle/blob/master/Syntaxes/cerberus.plist",
+		"If you want to provide a fix or improvement, please create a pull request against the original repository.",
+		"Once accepted there, we are happy to receive an update request."
+	],
+	"name": "cerberus",
+	"scopeName": "source.cerberus",
+	"patterns": [
+		{
+			"begin": "(?i)(Method|Function|Field)\\s*(?:\\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:(([\\.:])[a-zA-Z_][a-zA-Z0-9_]*)?([#%\\?])?)\\s*)?(\\()",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.cerberus"
+				},
+				"2": {
+					"name": "entity.name.function.cerberus"
+                },
+                
+                "3": {
+                    "name": "entity.name.type.module.cerberus"
+                },
+				"4": {
+					"name": "punctuation.separator.parameter.cerberus"
+				},
+				"6": {
+					"name": "punctuation.definition.parameters.begin.cerberus"
+				}
+			},
+			"end": "\\)",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.parameters.end.cerberus"
+				}
+			},
+			"name": "meta.function.cerberus",
+			"patterns": [
+				{
+					"match": "[a-zA-Z_][a-zA-Z0-9_]*",
+					"name": "variable.parameter.function.cerberus"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.arguments.cerberus"
+				}
+            ]
+        },
+        {
+            "patterns": [
+                {
+                    "match": "(class|Class)\\s+(\\w+)\\s*(<([\\w,]+)>)?",
+                    "captures": {
+                        "1": {
+                            "name": "keyword.control.class.cerberus"
+                        },
+                        "2": {
+                            "name": "support.class.cerberus"
+                        },
+                        "3": {
+                            "name": "support.class.cerberus"
+                        }
+                    }
+                },
+                {
+                    "match": "(?i)((extends[\\s+\\w+,]+)|private|public|abstract)",
+                    "name": "support.class.cerberus"
+                }
+            ]
+            
+        },
+        {
+            "patterns": [
+                {
+                    "begin": "#Rem|#rem",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.begin.cerberus"
+                        }
+                    },
+                    "end": "#End|#end",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.end.cerberus"
+                        }
+                    },
+                    "name": "comment.block.documentation.cerberus"
+                },
+                {
+                    "begin": "'",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.cerberus"
+                        }
+                    },
+                    "end": "\\n",
+                    "name": "comment.line.double-slash.cerberus"
+                }
+            ]
+        },
+		{
+			"match": "(?<![\\w\\d.])0[xX][0-9A-Fa-f]+(?![pPeE.0-9])",
+			"name": "constant.numeric.integer.hexadecimal.cerberus"
+		},
+		{
+			"match": "(?<![\\w\\d.])0[xX][0-9A-Fa-f]+(\\.[0-9A-Fa-f]+)?([eE]-?\\d*)?([pP][-+]\\d+)?",
+			"name": "constant.numeric.float.hexadecimal.cerberus"
+		},
+		{
+			"match": "(?<![\\w\\d.])\\d+(?![pPeE.0-9])",
+			"name": "constant.numeric.integer.cerberus"
+		},
+		{
+			"match": "(?<![\\w\\d.])\\d+(\\.\\d+)?([eE]-?\\d*)?",
+			"name": "constant.numeric.float.cerberus"
+		},
+		{
+			"begin": "\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.cerberus"
+				}
+			},
+			"end": "\"",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.end.cerberus"
+				}
+			},
+			"name": "string.quoted.double.cerberus",
+			"patterns": [
+				{
+					"include": "#escaped_char"
+				}
+			]
+		},
+        {
+            "captures": {
+                "1": {
+                    "name": "entity.name.type.module.cerberus"
+                }
+            },
+            "match": "(?i)\\b\\w+:(int|float|void|bool)"
+        },
+		{
+			"captures": {
+				"1": {
+					"name": "punctuation.definition.label.begin.cerberus"
+				},
+				"2": {
+					"name": "punctuation.definition.label.end.cerberus"
+				}
+			},
+			"match": "(:)[a-zA-Z_][a-zA-Z0-9_]*(:)",
+			"name": "constant.other.placeholder.cerberus"
+		},
+		{
+			"match": "(?i)\\b(break|do|else|for|if|elseif|endif|goto|return|then|repeat|while|wend|until|in|public|private|next|switch|case|default|select)\\b",
+			"name": "keyword.control.cerberus"
+        },
+        {
+            "match": "(?i)\\b(assert|method|import|field|local|const|global|extern|class|new|end)\\b",
+            "name": "keyword.control.class.cerberus"
+        },
+		{
+			"match": "(?<![^.]\\.|:)\\b(false|nil|true|_G|_VERSION|math\\.(pi|huge))\\b|(?<![.])\\.{3}(?!\\.)",
+			"name": "constant.language.cerberus"
+		},
+		{
+			"match": "(?<![^.]\\.|:)\\b(self)\\b",
+			"name": "variable.language.self.cerberus"
+		},
+		{
+			"match": "(?i)\\b(and|or|not|true|false)\\b",
+			"name": "keyword.operator.logical.cerberus"
+		},
+		{
+			"match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b(?=\\s*(?:[({\"']|\\[\\[))",
+			"name": "support.function.any-method.cerberus"
+		},
+		{
+			"match": "(?<=[^.]\\.|:)\\b([a-zA-Z_][a-zA-Z0-9_]*)",
+			"name": "variable.other.cerberus"
+		},
+		{
+			"match": "\\+|-|%|\\*|\\/|\\^|=|~=?|<=?|>=?|<>|>|<|(?<!\\.)\\.{2}(?!\\.)",
+            "name": "keyword.operator.cerberus",
+            "comments": "equals by itself followed by question mark causes problems"
+        },
+        {
+            "patterns": [
+
+                {
+                    "match": "#\\w+",
+                    "name": "support.function.kernel.cerberus"
+                }
+            ]
+        },
+        {
+            "repository": {
+                "endBlocks": {
+                    "patterns": [
+                        {
+                            "begin": "(?i)class|if|method|function",
+                            "end": "end|End",
+                            "patterns": [
+                                {
+                                    "include": "#endBlocks"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "keyWords": {
+                    "patterns": [
+                        {
+                            "match": "(?i)\\b(assert|method|import|field|local|const|global|extern|class|new|end)\\b",
+                            "name": "keyword.control.class.cerberus"
+                        }
+                    ]
+                }
+            }
+        }
+	]
+}
