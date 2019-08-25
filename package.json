@@ -6,7 +6,11 @@
     "publisher": "adamredwoods",
     "categories": ["Programming Languages"],
     "engines": {
-        "vscode": "^1.36.0"
+        "vscode": "^1.28.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/adamredwoods/Cerberus-VSCodeExtension.git"
     },
     "scripts": {
         "update-grammar": "node ../../build/npm/update-grammar.js Syntaxes/Cerberus.plist ./syntaxes/cerberus.tmLanguage.json"

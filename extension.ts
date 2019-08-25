@@ -3,11 +3,12 @@ import * as childProcess from 'child_process';
 
 async function SpawnTargetProcess(argsConfig:string, target:string, rootPath:string, channel:vscode.OutputChannel) {
     let config = vscode.workspace.getConfiguration('cerberus');
-    const currentDocument = vscode.window.activeTextEditor.document.uri.path;
+    const currentDocument = vscode.window.activeTextEditor.document.uri.fsPath;
     
     let cl:string = config.get('transccDirPath');
     let cf:string = config.get(argsConfig);
     let args:string[] = cf.split(' ').concat(["-target=\""+target+"\"","\""+currentDocument+"\""]);
+    displayOutput(cl+" "+args.join(" ")+"\n", channel);
 
     try {
         let sp = spawn(cl, args, { cwd: rootPath }, channel);
@@ -24,27 +25,27 @@ async function SpawnTargetProcess(argsConfig:string, target:string, rootPath:str
 
 async function commandHtml5Target(rootPath, channel:vscode.OutputChannel) {
     SpawnTargetProcess('args.html5','Html5_Game',rootPath, channel);
-    displayOutput('Done.', channel);
+    displayOutput('Done.\n', channel);
 }
 
 async function commandGlfwTarget(rootPath, channel:vscode.OutputChannel) {
     SpawnTargetProcess('args.glfw','Desktop_Game_(Glfw3)',rootPath, channel);
-    displayOutput('Done.', channel);
+    displayOutput('Done.\n', channel);
 }
 
 async function commandAndroidTarget(rootPath, channel:vscode.OutputChannel) {
     SpawnTargetProcess('args.android','Android_Game',rootPath, channel);
-    displayOutput('Done.', channel);
+    displayOutput('Done.\n', channel);
 }
 
 async function commandIosTarget(rootPath, channel:vscode.OutputChannel) {
     SpawnTargetProcess('args.ios','iOS_Game',rootPath, channel);
-    displayOutput('Done.', channel);
+    displayOutput('Done.\n', channel);
 }
 
 async function commandCppTarget(rootPath, channel:vscode.OutputChannel) {
     SpawnTargetProcess('args.cpp','C++_Tool',rootPath, channel);
-    displayOutput('Done.', channel);
+    displayOutput('Done.\n', channel);
 }
 
 function activate(context: vscode.ExtensionContext) {

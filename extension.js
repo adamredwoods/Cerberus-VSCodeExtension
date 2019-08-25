@@ -42,10 +42,11 @@ function SpawnTargetProcess(argsConfig, target, rootPath, channel) {
         var config, currentDocument, cl, cf, args, sp;
         return __generator(this, function (_a) {
             config = vscode.workspace.getConfiguration('cerberus');
-            currentDocument = vscode.window.activeTextEditor.document.uri.path;
+            currentDocument = vscode.window.activeTextEditor.document.uri.fsPath;
             cl = config.get('transccDirPath');
             cf = config.get(argsConfig);
             args = cf.split(' ').concat(["-target=\"" + target + "\"", "\"" + currentDocument + "\""]);
+            displayOutput(cl + " " + args.join(" ") + "\n", channel);
             try {
                 sp = spawn(cl, args, { cwd: rootPath }, channel);
             }
@@ -64,7 +65,7 @@ function commandHtml5Target(rootPath, channel) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             SpawnTargetProcess('args.html5', 'Html5_Game', rootPath, channel);
-            displayOutput('Done.', channel);
+            displayOutput('Done.\n', channel);
             return [2 /*return*/];
         });
     });
@@ -73,7 +74,7 @@ function commandGlfwTarget(rootPath, channel) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             SpawnTargetProcess('args.glfw', 'Desktop_Game_(Glfw3)', rootPath, channel);
-            displayOutput('Done.', channel);
+            displayOutput('Done.\n', channel);
             return [2 /*return*/];
         });
     });
@@ -82,7 +83,7 @@ function commandAndroidTarget(rootPath, channel) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             SpawnTargetProcess('args.android', 'Android_Game', rootPath, channel);
-            displayOutput('Done.', channel);
+            displayOutput('Done.\n', channel);
             return [2 /*return*/];
         });
     });
@@ -91,7 +92,7 @@ function commandIosTarget(rootPath, channel) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             SpawnTargetProcess('args.ios', 'iOS_Game', rootPath, channel);
-            displayOutput('Done.', channel);
+            displayOutput('Done.\n', channel);
             return [2 /*return*/];
         });
     });
@@ -100,7 +101,7 @@ function commandCppTarget(rootPath, channel) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             SpawnTargetProcess('args.cpp', 'C++_Tool', rootPath, channel);
-            displayOutput('Done.', channel);
+            displayOutput('Done.\n', channel);
             return [2 /*return*/];
         });
     });
