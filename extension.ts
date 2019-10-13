@@ -7,7 +7,12 @@ async function SpawnTargetProcess(argsConfig:string, target:string, rootPath:str
     
     let cl:string = config.get('transccDirPath');
     let cf:string = config.get(argsConfig);
-    let args:string[] = cf.split(' ').concat(["-target=\""+target+"\"","\""+currentDocument+"\""]);
+    let args:string[] = cf.split(' ')
+    if (target !== '') {
+        args = args.concat(["-target=\""+target+"\"","\""+currentDocument+"\""]);
+    } else {
+        args = args.concat(["\""+currentDocument+"\""])
+    }
     displayOutput(cl+" "+args.join(" ")+"\n", channel);
 
     try {
@@ -48,6 +53,11 @@ async function commandCppTarget(rootPath, channel:vscode.OutputChannel) {
     displayOutput('Done.\n', channel);
 }
 
+async function commandCustomTarget(rootPath, channel:vscode.OutputChannel) {
+    SpawnTargetProcess('args.custom','',rootPath, channel);
+    displayOutput('Done.\n', channel);
+}
+
 function activate(context: vscode.ExtensionContext) {
 
     let channel = vscode.window.createOutputChannel('Cerberus Output');
@@ -68,6 +78,9 @@ function activate(context: vscode.ExtensionContext) {
         }),
         vscode.commands.registerCommand('extension.buildCpp', async () => {
             commandCppTarget(rootPath, channel);
+        }),
+        vscode.commands.registerCommand('extension.buildCustom', async () => {
+            commandCustomTarget(rootPath, channel);
         })
     ]
 

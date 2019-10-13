@@ -45,7 +45,13 @@ function SpawnTargetProcess(argsConfig, target, rootPath, channel) {
             currentDocument = vscode.window.activeTextEditor.document.uri.fsPath;
             cl = config.get('transccDirPath');
             cf = config.get(argsConfig);
-            args = cf.split(' ').concat(["-target=\"" + target + "\"", "\"" + currentDocument + "\""]);
+            args = cf.split(' ');
+            if (target !== '') {
+                args = args.concat(["-target=\"" + target + "\"", "\"" + currentDocument + "\""]);
+            }
+            else {
+                args = args.concat(["\"" + currentDocument + "\""]);
+            }
             displayOutput(cl + " " + args.join(" ") + "\n", channel);
             try {
                 sp = spawn(cl, args, { cwd: rootPath }, channel);
@@ -106,6 +112,15 @@ function commandCppTarget(rootPath, channel) {
         });
     });
 }
+function commandCustomTarget(rootPath, channel) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            SpawnTargetProcess('args.custom', '', rootPath, channel);
+            displayOutput('Done.\n', channel);
+            return [2 /*return*/];
+        });
+    });
+}
 function activate(context) {
     var _this = this;
     var _a;
@@ -139,6 +154,12 @@ function activate(context) {
         vscode.commands.registerCommand('extension.buildCpp', function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 commandCppTarget(rootPath, channel);
+                return [2 /*return*/];
+            });
+        }); }),
+        vscode.commands.registerCommand('extension.buildCustom', function () { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                commandCustomTarget(rootPath, channel);
                 return [2 /*return*/];
             });
         }); })

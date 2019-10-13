@@ -8,4 +8,4 @@ To build, find the command menu (control-shift-p) and type Cerberus to select wh
 If you would like to expand on the language highlights, feel free to make a PR.
 
 v0.9.0 - initial commit
-
+v0.9.1 - adds correct tabs, adds custom target
