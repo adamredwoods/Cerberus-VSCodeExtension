@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var vscode = require("vscode");
 var childProcess = require("child_process");
-function SpawnTargetProcess(argsConfig, target, rootPath, channel) {
+function SpawnTargetProcess(argsConfig, target, rootPath, channel, collection) {
     return __awaiter(this, void 0, void 0, function () {
         var config, currentDocument, cl, cf, args, sp;
         return __generator(this, function (_a) {
@@ -54,7 +54,7 @@ function SpawnTargetProcess(argsConfig, target, rootPath, channel) {
             }
             displayOutput(cl + " " + args.join(" ") + "\n", channel);
             try {
-                sp = spawn(cl, args, { cwd: rootPath }, channel);
+                sp = spawn(cl, args, { cwd: rootPath }, channel, collection);
             }
             catch (err) {
                 displayOutput("Spawn error.", channel);
@@ -67,55 +67,22 @@ function SpawnTargetProcess(argsConfig, target, rootPath, channel) {
         });
     });
 }
-function commandHtml5Target(rootPath, channel) {
+function commandTarget(type, rootPath, channel, collection) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            SpawnTargetProcess('args.html5', 'Html5_Game', rootPath, channel);
-            displayOutput('Done.\n', channel);
-            return [2 /*return*/];
-        });
-    });
-}
-function commandGlfwTarget(rootPath, channel) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            SpawnTargetProcess('args.glfw', 'Desktop_Game_(Glfw3)', rootPath, channel);
-            displayOutput('Done.\n', channel);
-            return [2 /*return*/];
-        });
-    });
-}
-function commandAndroidTarget(rootPath, channel) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            SpawnTargetProcess('args.android', 'Android_Game', rootPath, channel);
-            displayOutput('Done.\n', channel);
-            return [2 /*return*/];
-        });
-    });
-}
-function commandIosTarget(rootPath, channel) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            SpawnTargetProcess('args.ios', 'iOS_Game', rootPath, channel);
-            displayOutput('Done.\n', channel);
-            return [2 /*return*/];
-        });
-    });
-}
-function commandCppTarget(rootPath, channel) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            SpawnTargetProcess('args.cpp', 'C++_Tool', rootPath, channel);
-            displayOutput('Done.\n', channel);
-            return [2 /*return*/];
-        });
-    });
-}
-function commandCustomTarget(rootPath, channel) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            SpawnTargetProcess('args.custom', '', rootPath, channel);
+            collection.clear();
+            if (type === 'html5')
+                SpawnTargetProcess('args.html5', 'Html5_Game', rootPath, channel, collection);
+            if (type === 'glfw')
+                SpawnTargetProcess('args.glfw', 'Desktop_Game_(Glfw3)', rootPath, channel, collection);
+            if (type === 'android')
+                SpawnTargetProcess('args.android', 'Android_Game', rootPath, channel, collection);
+            if (type === 'ios')
+                SpawnTargetProcess('args.ios', 'iOS_Game', rootPath, channel, collection);
+            if (type === 'cpp')
+                SpawnTargetProcess('args.cpp', 'C++_Tool', rootPath, channel, collection);
+            if (type === 'custom')
+                SpawnTargetProcess('args.custom', '', rootPath, channel, collection);
             displayOutput('Done.\n', channel);
             return [2 /*return*/];
         });
@@ -126,40 +93,41 @@ function activate(context) {
     var _a;
     var channel = vscode.window.createOutputChannel('Cerberus Output');
     var rootPath = vscode.workspace.rootPath;
+    var collection = vscode.languages.createDiagnosticCollection('test');
     var cerberusCommands = [
         vscode.commands.registerCommand('extension.buildHtml5', function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                commandHtml5Target(rootPath, channel);
+                commandTarget('html5', rootPath, channel, collection);
                 return [2 /*return*/];
             });
         }); }),
         vscode.commands.registerCommand('extension.buildGlfw', function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                commandGlfwTarget(rootPath, channel);
+                commandTarget('glfw', rootPath, channel, collection);
                 return [2 /*return*/];
             });
         }); }),
         vscode.commands.registerCommand('extension.buildAndroid', function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                commandAndroidTarget(rootPath, channel);
+                commandTarget('android', rootPath, channel, collection);
                 return [2 /*return*/];
             });
         }); }),
         vscode.commands.registerCommand('extension.buildIos', function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                commandIosTarget(rootPath, channel);
+                commandTarget('ios', rootPath, channel, collection);
                 return [2 /*return*/];
             });
         }); }),
         vscode.commands.registerCommand('extension.buildCpp', function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                commandCppTarget(rootPath, channel);
+                commandTarget('cpp', rootPath, channel, collection);
                 return [2 /*return*/];
             });
         }); }),
         vscode.commands.registerCommand('extension.buildCustom', function () { return __awaiter(_this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                commandCustomTarget(rootPath, channel);
+                commandTarget('custom', rootPath, channel, collection);
                 return [2 /*return*/];
             });
         }); })
@@ -184,10 +152,23 @@ function exec(command, options) {
         });
     });
 }
-function spawn(command, args, options, channel) {
+function spawn(command, args, options, channel, collection) {
     var sp = childProcess.spawn(command, args, options);
     sp.stdout.on('data', function (data) {
-        displayOutput(data.toString(), channel);
+        var ds = data.toString(), dsh;
+        if (ds.indexOf('Error') > -1) {
+            var lineNum = parseInt(ds.substring(ds.indexOf('<') + 1, ds.indexOf('>'))) - 1, docUri = vscode.Uri.file(ds.substring(0, ds.indexOf('<'))), docRange = new vscode.Range(new vscode.Position(lineNum, 0), new vscode.Position(lineNum, 99));
+            collection.set(docUri, [
+                {
+                    code: '',
+                    message: ds,
+                    range: docRange,
+                    severity: vscode.DiagnosticSeverity.Error,
+                    source: 'cerebus'
+                }
+            ]);
+        }
+        displayOutput(ds, channel);
     });
     sp.stderr.on('data', function (data) {
         displayOutput(data.toString(), channel);

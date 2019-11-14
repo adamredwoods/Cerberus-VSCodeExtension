@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as childProcess from 'child_process';
 
-async function SpawnTargetProcess(argsConfig:string, target:string, rootPath:string, channel:vscode.OutputChannel) {
+async function SpawnTargetProcess(argsConfig:string, target:string, rootPath:string, channel:vscode.OutputChannel, collection:vscode.DiagnosticCollection) {
     let config = vscode.workspace.getConfiguration('cerberus');
     const currentDocument = vscode.window.activeTextEditor.document.uri.fsPath;
     
@@ -16,7 +16,7 @@ async function SpawnTargetProcess(argsConfig:string, target:string, rootPath:str
     displayOutput(cl+" "+args.join(" ")+"\n", channel);
 
     try {
-        let sp = spawn(cl, args, { cwd: rootPath }, channel);
+        let sp = spawn(cl, args, { cwd: rootPath }, channel, collection);
     }
     catch(err)
     {
@@ -28,33 +28,16 @@ async function SpawnTargetProcess(argsConfig:string, target:string, rootPath:str
     }
 }
 
-async function commandHtml5Target(rootPath, channel:vscode.OutputChannel) {
-    SpawnTargetProcess('args.html5','Html5_Game',rootPath, channel);
-    displayOutput('Done.\n', channel);
-}
+async function commandTarget(type:string, rootPath, channel:vscode.OutputChannel, collection:vscode.DiagnosticCollection) {
+    collection.clear();
 
-async function commandGlfwTarget(rootPath, channel:vscode.OutputChannel) {
-    SpawnTargetProcess('args.glfw','Desktop_Game_(Glfw3)',rootPath, channel);
-    displayOutput('Done.\n', channel);
-}
+    if (type === 'html5') SpawnTargetProcess('args.html5','Html5_Game',rootPath, channel, collection);
+    if (type === 'glfw') SpawnTargetProcess('args.glfw','Desktop_Game_(Glfw3)',rootPath, channel, collection);
+    if (type === 'android') SpawnTargetProcess('args.android','Android_Game',rootPath, channel, collection);
+    if (type === 'ios') SpawnTargetProcess('args.ios','iOS_Game',rootPath, channel, collection);
+    if (type === 'cpp') SpawnTargetProcess('args.cpp','C++_Tool',rootPath, channel, collection);
+    if (type === 'custom') SpawnTargetProcess('args.custom','',rootPath, channel, collection);
 
-async function commandAndroidTarget(rootPath, channel:vscode.OutputChannel) {
-    SpawnTargetProcess('args.android','Android_Game',rootPath, channel);
-    displayOutput('Done.\n', channel);
-}
-
-async function commandIosTarget(rootPath, channel:vscode.OutputChannel) {
-    SpawnTargetProcess('args.ios','iOS_Game',rootPath, channel);
-    displayOutput('Done.\n', channel);
-}
-
-async function commandCppTarget(rootPath, channel:vscode.OutputChannel) {
-    SpawnTargetProcess('args.cpp','C++_Tool',rootPath, channel);
-    displayOutput('Done.\n', channel);
-}
-
-async function commandCustomTarget(rootPath, channel:vscode.OutputChannel) {
-    SpawnTargetProcess('args.custom','',rootPath, channel);
     displayOutput('Done.\n', channel);
 }
 
@@ -62,25 +45,26 @@ function activate(context: vscode.ExtensionContext) {
 
     let channel = vscode.window.createOutputChannel('Cerberus Output');
     let rootPath = vscode.workspace.rootPath;
+    const collection = vscode.languages.createDiagnosticCollection('test');
 
     let cerberusCommands = [
         vscode.commands.registerCommand('extension.buildHtml5', async () => {
-            commandHtml5Target(rootPath, channel);
+            commandTarget('html5', rootPath, channel, collection);
         }),
         vscode.commands.registerCommand('extension.buildGlfw', async () => {
-            commandGlfwTarget(rootPath, channel);
+            commandTarget('glfw', rootPath, channel, collection);
         }),
         vscode.commands.registerCommand('extension.buildAndroid', async () => {
-            commandAndroidTarget(rootPath, channel);
+            commandTarget('android', rootPath, channel, collection);
         }),
         vscode.commands.registerCommand('extension.buildIos', async () => {
-            commandIosTarget(rootPath, channel);
+            commandTarget('ios', rootPath, channel, collection);
         }),
         vscode.commands.registerCommand('extension.buildCpp', async () => {
-            commandCppTarget(rootPath, channel);
+            commandTarget('cpp', rootPath, channel, collection);
         }),
         vscode.commands.registerCommand('extension.buildCustom', async () => {
-            commandCustomTarget(rootPath, channel);
+            commandTarget('custom', rootPath, channel, collection);
         })
     ]
 
@@ -108,10 +92,29 @@ function exec(command: string, options: childProcess.ExecOptions): Promise<{ std
 	});
 }
 
-function spawn(command: string, args:string[], options: childProcess.SpawnOptions, channel:vscode.OutputChannel): any {
+function spawn(command: string, args:string[], options: childProcess.SpawnOptions, channel:vscode.OutputChannel, collection:vscode.DiagnosticCollection): any {
     let sp = childProcess.spawn(command, args, options);
     sp.stdout.on('data', function (data) {
-        displayOutput(data.toString(), channel);
+        let ds = data.toString(),
+            dsh;
+        if (ds.indexOf('Error') > -1) {
+            let lineNum = parseInt(ds.substring(ds.indexOf('<')+1, ds.indexOf('>')))-1,
+                docUri = vscode.Uri.file(ds.substring(0, ds.indexOf('<'))),
+                docRange = new vscode.Range(new vscode.Position(lineNum, 0), new vscode.Position(lineNum, 99));
+            collection.set(
+                docUri,
+                [
+                    {
+                        code: '',
+                        message: ds,
+                        range: docRange,
+                        severity: vscode.DiagnosticSeverity.Error,
+                        source: 'cerberus'
+                    }
+                ]
+            )
+        }
+        displayOutput(ds, channel);
     });
     
     sp.stderr.on('data', function (data) {
